@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.notorious.repository.PersonRepository">
+    <insert id="save" parameterType="com.notorious.entity.Person">
+        insert into Person(id,name) values(#{id},#{name})
+    </insert>
+    <update id="update" parameterType="com.notorious.entity.Person">
+        update Person set name=#{name} where id=#{id}
+    </update>
+    <delete id="deleteById" parameterType="int">
+        delete from Person where id=#{id}
+    </delete>
+    <select id="findAll" resultType="com.notorious.entity.Person">
+        select * from Person
+    </select>
+    <select id="findById" parameterType="int" resultType="com.notorious.entity.Person">
+        select * from Person where id=#{id}
+    </select>
+</mapper>

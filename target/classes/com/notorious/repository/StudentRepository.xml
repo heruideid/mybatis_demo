@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.notorious.repository.StudentRepository">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache">
+        <!-- 创建缓存后，最后一次访问缓存的时间到缓存失效的时间间隔 -->
+        <property name="timeToIdleSeconds" value="3600"/>
+        <!-- 缓存自创建时间起至失效的时间间隔 -->
+        <property name="timeToLiveSeconds" value="3600"/>
+        <!-- 缓存回收策略，LRU(移除近期使用最少的对象) -->
+        <property name="memoryStoreEvictionPolicy" value="LRU"/>
+    </cache>
+
+    <resultMap id="StudentMap" type="com.notorious.entity.Student">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <association property="aClass" javaType="com.notorious.entity.Classes">
+            <id column="cid" property="id"></id>
+            <result column="cname" property="name"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="StudentMapLazy" type="com.notorious.entity.Student">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <association property="aClass" javaType="com.notorious.entity.Classes" select="com.notorious.repository.ClassRepository.findByIdLazy" column="cid">
+        </association>
+    </resultMap>
+
+    <select id="findById" parameterType="int" resultType="com.notorious.entity.Student" resultMap="StudentMap">
+        select s.id,s.name,c.id as cid,c.name as cname from student s,class c where s.id=#{id} and s.cid=c.id
+    </select>
+
+    <select id="findByIdLazy" parameterType="int" resultMap="StudentMapLazy">
+        select * from student  where id=#{id}
+    </select>
+
+    <select id="findByStudent" parameterType="com.notorious.entity.Student" resultType="com.notorious.entity.Student">
+        select * from student
+        <trim prefix="where" prefixOverrides="and">
+            <if test="id!=0">
+                id=#{id}
+            </if>
+            <if test="name!=null">
+                and name =#{name}
+            </if>
+        </trim>
+    </select>
+</mapper>
